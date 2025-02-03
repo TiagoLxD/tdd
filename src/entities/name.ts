@@ -1,22 +1,20 @@
-import { InvalidNameError } from '.';
-import { Either, left, right } from '../shared';
+import { left, right, Either } from '@/shared'
+import { InvalidNameError } from './errors/invalid-name-error'
 
 export class Name {
-  private constructor(private readonly name: string) {
-    Object.freeze(this);
-  }
+    public readonly value: string
 
-  static create(name: string): Either<InvalidNameError, Name> {
-    if (!Name.validate(name)) {
-      return left(new InvalidNameError());
+    private constructor(name: string) {
+        this.value = name
     }
-    return right(new Name(name));
-  }
-  static validate(name: string): boolean {
-    if (!name) return false;
-    if (name.trim().length < 2 || name.trim().length > 255) {
-      return false;
+
+    public static create(name: string): Either<InvalidNameError, Name> {
+        if (!Name.validate(name)) return left(new InvalidNameError())
+        return right(new Name(name.trim()))
     }
-    return true;
-  }
+
+    public static validate(name: string): boolean {
+        const trimmed = name.trim()
+        return trimmed.length >= 2 && trimmed.length <= 256
+    }
 }
